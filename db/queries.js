@@ -10,16 +10,15 @@ const pgp = require('pg-promise')(options);
 
 // const connectionString = 'pginstance.ctwfwbqhfx8u.us-west-1.rds.amazonaws.com:5432' || 'postgres://localhost:5432/training';
 const db = pgp({
-  user: 'testground',
-  database: 'mytest123',
-  password: 'blank',
-  host: 'playgroundtest.ctwfwbqhfx8u.us-west-1.rds.amazonaws.com',
+  user: 'fitness123',
+  database: 'fitnessPlayground',
+  password: 'keeponfasting',
+  host: 'fitnesstest.ctwfwbqhfx8u.us-west-1.rds.amazonaws.com',
   port: 5432,
 });
 
 // query functions
 function getChestExercises(req, res, next) {
-  console.log('in chest function');
   const query = "select name, concat(set_min, '-', set_max) as SetRange, \
   concat(light_rep_min, '-', light_rep_max) as LightRepRange, \
   concat(heavy_rep_min, '-', heavy_rep_max) as HeavyRepRange, \
@@ -27,11 +26,9 @@ function getChestExercises(req, res, next) {
   from chest";
   db.any(query)
     .then(function resolve(data) {
-      console.log(data, '------');
       res.status(200).send(data);
     })
     .catch(function error(err) {
-      console.log('looks like an error');
       return next(err);
     });
 }
