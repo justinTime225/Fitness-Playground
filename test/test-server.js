@@ -50,4 +50,18 @@ describe('Fitness Data', function() {
       })
       .end(done);
   });
+  it('should resond with tricep data', (done) => {
+    request(app)
+      .get('/tricep')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((res, err) => {
+        res.body.length.should.equal(4);
+        res.body[0].name.should.equal('CloseGripBenchPress');
+        res.body[1].name.should.equal('TricepHammer');
+        res.body[2].name.should.equal('DumbbellKickback');
+        res.body[3].name.should.equal('Pushdown');
+      })
+      .end(done);
+  });
 });
