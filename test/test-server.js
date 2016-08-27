@@ -80,4 +80,17 @@ describe('Fitness Data', function() {
       })
       .end(done);
   });
+  it('should respond with shoulders data', (done) => {
+    request(app)
+      .get('/shoulders')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((res, err) => {
+        res.body.length.should.equal(3);
+        res.body[0].name.should.equal('StandingDumbbellPress');
+        res.body[1].name.should.equal('LateralRaise');
+        res.body[2].name.should.equal('SeatedDumbbellPress');
+      })
+      .end(done);
+  });
 });
