@@ -9,6 +9,7 @@ describe('Fitness Data', function() {
     request(app)
       .get('/chest')
       .expect(200)
+      .expect('Content-Type', /json/)
       .expect((res, err) => {
         res.body.length.should.equal(5);
         res.body[0].name.should.equal('InclinePress');
@@ -19,10 +20,26 @@ describe('Fitness Data', function() {
       })
       .end(done);
   });
+  it('should resond with bicep data', (done) => {
+    request(app)
+      .get('/bicep')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((res, err) => {
+        res.body.length.should.equal(5);
+        res.body[0].name.should.equal('StandingCurl');
+        res.body[1].name.should.equal('HammerCurl');
+        res.body[2].name.should.equal('InclineDumbbellCurl');
+        res.body[3].name.should.equal('ReverseGripBentOverRows');
+        res.body[4].name.should.equal('ConcentrationCurl');
+      })
+      .end(done);
+  });
   it('should resond with back data', (done) => {
     request(app)
       .get('/back')
       .expect(200)
+      .expect('Content-Type', /json/)
       .expect((res, err) => {
         res.body.length.should.equal(5);
         res.body[0].name.should.equal('RomanianDeadlift');
