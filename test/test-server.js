@@ -5,7 +5,7 @@ const app = require('../server');
 
 
 describe('Fitness Data', function() {
-  it('should resond with chest data', (done) => {
+  it('should respond with chest data', (done) => {
     request(app)
       .get('/chest')
       .expect(200)
@@ -20,7 +20,7 @@ describe('Fitness Data', function() {
       })
       .end(done);
   });
-  it('should resond with bicep data', (done) => {
+  it('should respond with bicep data', (done) => {
     request(app)
       .get('/bicep')
       .expect(200)
@@ -35,7 +35,7 @@ describe('Fitness Data', function() {
       })
       .end(done);
   });
-  it('should resond with back data', (done) => {
+  it('should respond with back data', (done) => {
     request(app)
       .get('/back')
       .expect(200)
@@ -50,7 +50,7 @@ describe('Fitness Data', function() {
       })
       .end(done);
   });
-  it('should resond with tricep data', (done) => {
+  it('should respond with tricep data', (done) => {
     request(app)
       .get('/tricep')
       .expect(200)
@@ -61,6 +61,22 @@ describe('Fitness Data', function() {
         res.body[1].name.should.equal('TricepHammer');
         res.body[2].name.should.equal('DumbbellKickback');
         res.body[3].name.should.equal('Pushdown');
+      })
+      .end(done);
+  });
+  it('should respond with legs data', (done) => {
+    request(app)
+      .get('/legs')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((res, err) => {
+        res.body.length.should.equal(6);
+        res.body[0].name.should.equal('Squats');
+        res.body[1].name.should.equal('Lunges');
+        res.body[2].name.should.equal('SumoDeadlift');
+        res.body[3].name.should.equal('LegExtension');
+        res.body[4].name.should.equal('LegCurl');
+        res.body[5].name.should.equal('CalveRaise');
       })
       .end(done);
   });
