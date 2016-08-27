@@ -93,4 +93,17 @@ describe('Fitness Data', function() {
       })
       .end(done);
   });
+  it('should respond with core data', (done) => {
+    request(app)
+      .get('/core')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((res, err) => {
+        res.body.length.should.equal(3);
+        res.body[0].name.should.equal('ObliqueSideBend');
+        res.body[1].name.should.equal('AbPullDown');
+        res.body[2].name.should.equal('WeightCrunch');
+      })
+      .end(done);
+  });
 });
