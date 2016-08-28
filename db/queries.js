@@ -17,37 +17,60 @@ const db = pgp({
   port: 5432,
 });
 
+// helper function
+function handleQuery(query) {
+  let q = {};
+  if (query.superset === 'true') {
+    q.superset = " LEFT OUTER JOIN bicep B ON A.superset_ID = B.ID ";
+    q.supersetExercises = ", B.name as supersetName, B.break_under_min as superBreak";
+  } else {
+    q.superset = '';
+    q.supersetExercises = '';
+  }
+  if (query.intensity === 'Heavy') {
+    q.intensity = "concat(A.heavy_rep_min, '-', A.heavy_rep_max) as HeavyRepRange,";
+  } else {
+    q.intensity = "concat(A.light_rep_min, '-', A.light_rep_max) as LightRepRange,";
+  }
+  if (query.buildType === 'Bulk') {
+    q.buildType = " where A.build_type='Bulk' ";
+  } else {
+    q.buildType = " where A.build_type='Tone' ";
+  }
+  return q;
+}
 // query functions
 function fetchPushGroup(req, res, next) {
   console.log('req info', req.query);
-  let superset = '';
-  let supersetExercises = '';
-  let intensity = '';
-  let buildType = '';
-  if (req.query.superset === 'true') {
-    superset = " LEFT OUTER JOIN bicep B ON A.superset_ID = B.ID ";
-    supersetExercises = ", B.name as supersetName, B.break_under_min as superBreak";
-  } 
-  if (req.query.intensity === 'Heavy') {
-    intensity = "concat(A.heavy_rep_min, '-', A.heavy_rep_max) as HeavyRepRange,";
-  } else {
-    intensity = "concat(A.light_rep_min, '-', A.light_rep_max) as LightRepRange,";
-  }
-  if (req.query.buildType === 'Bulk') {
-    buildType = " where A.build_type='Bulk' ";
-  } else {
-    buildType = " where A.build_type='Tone' ";
-  }
+  // let superset = '';
+  // let supersetExercises = '';
+  // let intensity = '';
+  // let buildType = '';
+  // if (req.query.superset === 'true') {
+  //   superset = " LEFT OUTER JOIN bicep B ON A.superset_ID = B.ID ";
+  //   supersetExercises = ", B.name as supersetName, B.break_under_min as superBreak";
+  // } 
+  // if (req.query.intensity === 'Heavy') {
+  //   intensity = "concat(A.heavy_rep_min, '-', A.heavy_rep_max) as HeavyRepRange,";
+  // } else {
+  //   intensity = "concat(A.light_rep_min, '-', A.light_rep_max) as LightRepRange,";
+  // }
+  // if (req.query.buildType === 'Bulk') {
+  //   buildType = " where A.build_type='Bulk' ";
+  // } else {
+  //   buildType = " where A.build_type='Tone' ";
+  // }
   // abstract this top part out to a function
+  let q = handleQuery(req.query);
   const query = "select A.name, concat(A.set_min, '-', A.set_max) as SetRange, \
-  " + intensity + " \
-  A.break_under_min as Break_Time, A.superset_type, A.build_type" + supersetExercises + " \
-  from chest A " + superset + buildType + " \
+  " + q.intensity + " \
+  A.break_under_min as Break_Time, A.superset_type, A.build_type" + q.supersetExercises + " \
+  from chest A " + q.superset + q.buildType + " \
   UNION \
   select A.name, concat(A.set_min, '-', A.set_max) as SetRange, \
-  " + intensity + " \
-  A.break_under_min as Break_Time, A.superset_type, A.build_type" + supersetExercises + " \
-  from tricep A" + superset + buildType;
+  " + q.intensity + " \
+  A.break_under_min as Break_Time, A.superset_type, A.build_type" + q.supersetExercises + " \
+  from tricep A" + q.superset + q.buildType;
 
   db.any(query)
     .then(function resolve(data) {
