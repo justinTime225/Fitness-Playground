@@ -3,12 +3,14 @@ import { reduxForm } from 'redux-form';
 import { createPost } from '../actions/form.action.js';
 class Form extends Component {
   render() {
-    console.log('in test route', this.props.custom);
-    const { fields: {theme, superset, buildType, intensity}, handleSubmit } = this.props;
-
+    // console.log('in test route', this.props.custom, this.props.fields);
+    const { fields: {text, theme, superset, buildType, intensity}, handleSubmit } = this.props;
     return <div>
       <div>Create Form</div>
       <form onSubmit={handleSubmit(this.props.createPost)}>
+        <div classNmae="form-group">
+          <input type="text" className="form-control" {...text}/>
+        </div>
         <div className="form-group has-warning">
           <label htmlFor="s1"></label>
           <h3>Exercise Theme</h3>
@@ -57,6 +59,7 @@ class Form extends Component {
 }
 
 function mapStateToProps(state) {
+  // console.log(state.form.UserForm, '=======');
   return {
     custom: state.customWorkout.list
   };
@@ -64,5 +67,5 @@ function mapStateToProps(state) {
 
 export default reduxForm({
   form: 'UserForm',
-  fields: ['theme', 'superset', 'buildType', 'intensity']
+  fields: ['text', 'theme', 'superset', 'buildType', 'intensity']
 }, mapStateToProps, { createPost })(Form);
