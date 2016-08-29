@@ -19,6 +19,7 @@ describe('Fitness Data', function() {
             res.body.length.should.equal(6);
             for (var key in res.body) {
               res.body[key].supersetbreak.should.equal(1);
+              res.body[key].build_type.should.equal("Bulk");
             }
           })
           .end(done);
@@ -49,18 +50,50 @@ describe('Fitness Data', function() {
             res.body.length.should.equal(7);
             for (var key in res.body) {
               res.body[key].supersetbreak.should.equal(1);
+              res.body[key].build_type.should.equal("Bulk");
             }
           })
           .end(done);
       });
       it('should respond with light tone pull data', (done) => {
         request(app)
-          .get('/push')
+          .get('/pull')
           .query({theme: 'pull', superset: 'false', buildType: 'Tone', intensity: 'Light'})
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res, err) => {
             res.body.length.should.equal(3);
+            for (var key in res.body) {
+              res.body[key].build_type.should.equal("Tone");
+            }
+          })
+          .end(done);
+      });
+    });
+    describe('Lower Body Data', () => {
+      it('should respond with heavy superset Lower Body data', (done) => {
+        request(app)
+          .get('/lowerbody')
+          .query({theme: 'pull', superset: 'true', buildType: 'Bulk', intensity: 'Heavy'})
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res, err) => {
+            res.body.length.should.equal(4);
+            for (var key in res.body) {
+              res.body[key].supersetbreak.should.equal(1);
+              res.body[key].build_type.should.equal("Bulk");
+            }
+          })
+          .end(done);
+      });
+      it('should respond with light tone Lower Body data', (done) => {
+        request(app)
+          .get('/lowerbody')
+          .query({theme: 'pull', superset: 'false', buildType: 'Tone', intensity: 'Light'})
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res, err) => {
+            res.body.length.should.equal(5);
             for (var key in res.body) {
               res.body[key].build_type.should.equal("Tone");
             }
