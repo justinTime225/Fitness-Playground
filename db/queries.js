@@ -54,7 +54,7 @@ function handleQuery(query, one, two) {
 }
 // query functions
 function fetchPushGroup(req, res, next) {
-  console.log('req info', req.query);
+  // console.log('req info', req.query);
   const q = handleQuery(req.query, 'chest', 'tricep');
   db.any(q.query)
     .then(function resolve(data) {
@@ -66,7 +66,14 @@ function fetchPushGroup(req, res, next) {
 }
 
 function fetchPullGroup(req, res, next) {
-  
+  const q = handleQuery(req.query, 'back', 'bicep');
+  db.any(q.query)
+    .then(function resolve(data) {
+      res.status(200).send(data);
+    })
+    .catch(function error(err) {
+      return next(err);
+    });  
 }
 
 function fetchLowerBodyGroup(req, res, next) {
