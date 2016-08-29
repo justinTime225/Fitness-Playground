@@ -1,34 +1,52 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
+import { Link } from 'react-router';
 import { createPost } from '../actions/form.action.js';
+const validate = values => {
+  const errors = {};
+  for (let key in values) {
+    if (!values[key] || values[key] === 'Select') {
+      errors[key] = 'Required';
+    }
+  }
+  return errors;
+};
 class Form extends Component {
+  static contextTypes = {
+    router: PropTypes.object
+  };
+  onSubmit(props) {
+    this.props.createPost(props)
+      .then(() => {
+        // form has been submitted, navigate user to custom route
+        this.context.router.push('/custom');
+      });
+  }
   render() {
-    // console.log('in test route', this.props.custom, this.props.fields);
-    const { fields: {text, theme, superset, buildType, intensity}, handleSubmit } = this.props;
+    const { fields: {theme, superset, buildType, intensity}, handleSubmit } = this.props;
     return <div>
-      <div>Create Form</div>
-      <form onSubmit={handleSubmit(this.props.createPost)}>
-        <div classNmae="form-group">
-          <input type="text" className="form-control" {...text}/>
-        </div>
+      <h3>Customize your plan workout plan</h3>
+      <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
         <div className="form-group has-warning">
           <label htmlFor="s1"></label>
           <h3>Exercise Theme</h3>
           <select id="s1" value="Push" className="form-control" {...theme} >
             <option value="Select">Select</option> 
-            <option value="Push">Push</option>
-            <option value="Pull">Pull</option>
-            <option value="Legs">Legs</option>
+            <option value="push">Push</option>
+            <option value="pull">Pull</option>
+            <option value="lowerbody">Lower Body</option>
           </select>
+          {theme.touched && theme.error && <div style={{ color: 'red' }}>{theme.error}</div>}
         </div>
         <div className="form-group has-warning">
           <label htmlFor="s1"></label>
           <h3>Superset</h3>
           <select id="s1" value="True" className="form-control"  {...superset}> 
             <option value="Select">Select</option> 
-            <option value="True">Yes, make it challenging</option>
-            <option value="False">Not today</option>
+            <option value="true">Yes, make it challenging</option>
+            <option value="false">Not today</option>
           </select>
+          {superset.touched && superset.error && <div style={{ color: 'red' }}>{superset.error}</div>}
         </div>
         <div className="form-group has-warning">
           <label htmlFor="s1"></label>
@@ -38,6 +56,7 @@ class Form extends Component {
             <option value="Bulk">Bulking</option>
             <option value="Tone">Toning</option>
           </select>
+          {buildType.touched && buildType.error && <div style={{ color: 'red' }}>{buildType.error}</div>}
         </div>
         <div className="form-group has-warning">
           <label htmlFor="s1"></label>
@@ -47,11 +66,10 @@ class Form extends Component {
             <option value="Heavy">Heavy</option>
             <option value="Light">Light</option>
           </select>
+          {intensity.touched && intensity.error && <div style={{ color: 'red' }}>{intensity.error}</div>}
         </div>
-      
-        
+
         <button type="submit" className="btn btn-primary">Submit</button>
-        
 
       </form>
     </div>;
@@ -59,7 +77,6 @@ class Form extends Component {
 }
 
 function mapStateToProps(state) {
-  // console.log(state.form.UserForm, '=======');
   return {
     custom: state.customWorkout.list
   };
@@ -67,5 +84,6 @@ function mapStateToProps(state) {
 
 export default reduxForm({
   form: 'UserForm',
-  fields: ['text', 'theme', 'superset', 'buildType', 'intensity']
+  fields: ['theme', 'superset', 'buildType', 'intensity'],
+  validate
 }, mapStateToProps, { createPost })(Form);
