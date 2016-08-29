@@ -12,13 +12,31 @@ describe('Fitness Data', function() {
       it('should respond with push data', (done) => {
         request(app)
           .get('/push')
-          .query({theme: 'push', superset: 'false', buildType: 'Bulk', intensity: 'Heavy'})
+          .query({theme: 'push', superset: 'true', buildType: 'Bulk', intensity: 'Heavy'})
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .expect((res, err) => {
+            res.body.length.should.equal(6);
+            for (var key in res.body) {
+              res.body[key].supersetbreak.should.equal(1);
+            }
+          })
+          .end(done);
+      });
+    });
+    describe('Push Data', () => {
+      it('should respond with push data', (done) => {
+        request(app)
+          .get('/push')
+          .query({theme: 'push', superset: 'false', buildType: 'Tone', intensity: 'Light'})
           .expect(200)
           .expect('Content-Type', /json/)
           .expect((res, err) => {
             console.log(res.body);
-            res.body.length.should.equal(6);
-
+            res.body.length.should.equal(3);
+            for (var key in res.body) {
+              res.body[key].build_type.should.equal("Tone");
+            }
           })
           .end(done);
       });
