@@ -19,7 +19,7 @@ const db = pgp({
 
 // helper function
 function handleQuery(query, one, two) {
-  let q = {};
+  const q = {};
   if (query.intensity === 'Heavy') {
     q.intensityMain = "concat(A.heavy_rep_min, '-', A.heavy_rep_max) as HeavyRepRange,";
     q.intensitySecond = "concat(B.heavy_rep_min, '-', B.heavy_rep_max) as supersetHeavyRepRange,";
