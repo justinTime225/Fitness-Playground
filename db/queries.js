@@ -77,7 +77,14 @@ function fetchPullGroup(req, res, next) {
 }
 
 function fetchLowerBodyGroup(req, res, next) {
-  
+  const q = handleQuery(req.query, 'legs', 'core');
+  db.any(q.query)
+    .then(function resolve(data) {
+      res.status(200).send(data);
+    })
+    .catch(function error(err) {
+      return next(err);
+    });  
 }
 
 function getChestExercises(req, res, next) {
