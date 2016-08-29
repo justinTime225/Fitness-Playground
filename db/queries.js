@@ -18,19 +18,22 @@ const db = pgp({
 });
 
 // helper function
-function handleQuery(query) {
+function handleQuery(query, one, two) {
   let q = {};
+  if (query.intensity === 'Heavy') {
+    q.intensityMain = "concat(A.heavy_rep_min, '-', A.heavy_rep_max) as HeavyRepRange,";
+    q.intensitySecond = "concat(B.heavy_rep_min, '-', B.heavy_rep_max) as supersetHeavyRepRange,";
+  } else {
+    q.intensityMain = "concat(A.light_rep_min, '-', A.light_rep_max) as LightRepRange,";
+    q.intensitySecond = "concat(B.light_rep_min, '-', B.light_rep_max) as supersetLightRepRange,";
+  }
   if (query.superset === 'true') {
     q.superset = " LEFT OUTER JOIN bicep B ON A.superset_ID = B.ID ";
-    q.supersetExercises = ", B.name as supersetName, B.break_under_min as superBreak";
+    q.supersetExercises = ", B.name as supersetName, concat(B.set_min, '-', B.set_max) \
+    as supersetSetRange, " + q.intensitySecond + " B.break_under_min as supersetBreak";
   } else {
     q.superset = '';
     q.supersetExercises = '';
-  }
-  if (query.intensity === 'Heavy') {
-    q.intensity = "concat(A.heavy_rep_min, '-', A.heavy_rep_max) as HeavyRepRange,";
-  } else {
-    q.intensity = "concat(A.light_rep_min, '-', A.light_rep_max) as LightRepRange,";
   }
   if (query.buildType === 'Bulk') {
     q.buildType = " where A.build_type='Bulk' ";
@@ -38,21 +41,21 @@ function handleQuery(query) {
     q.buildType = " where A.build_type='Tone' ";
   }
   q.query = "select A.name, concat(A.set_min, '-', A.set_max) as SetRange, \
-  " + q.intensity + " \
+  " + q.intensityMain + " \
   A.break_under_min as Break_Time, A.superset_type, A.build_type" + q.supersetExercises + " \
-  from chest A " + q.superset + q.buildType + " \
+  from "+ one +" A " + q.superset + q.buildType + " \
   UNION \
   select A.name, concat(A.set_min, '-', A.set_max) as SetRange, \
-  " + q.intensity + " \
+  " + q.intensityMain + " \
   A.break_under_min as Break_Time, A.superset_type, A.build_type" + q.supersetExercises + " \
-  from tricep A" + q.superset + q.buildType;
+  from "+ two +" A" + q.superset + q.buildType;
 
   return q;
 }
 // query functions
 function fetchPushGroup(req, res, next) {
   console.log('req info', req.query);
-  const q = handleQuery(req.query);
+  const q = handleQuery(req.query, 'chest', 'tricep');
   db.any(q.query)
     .then(function resolve(data) {
       res.status(200).send(data);
